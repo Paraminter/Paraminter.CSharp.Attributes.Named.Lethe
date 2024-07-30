@@ -3,31 +3,32 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Paraminter.Associators.Queries;
+using Paraminter.CSharp.Attributes.Named.Lethe.Common;
 using Paraminter.CSharp.Attributes.Named.Lethe.Queries;
-using Paraminter.CSharp.Attributes.Named.Queries.Collectors;
+using Paraminter.CSharp.Attributes.Named.Queries.Handlers;
 using Paraminter.Queries.Handlers;
 
 using System;
 
 /// <summary>Associates syntactic C# named attribute arguments.</summary>
 public sealed class SyntacticCSharpAttributeNamedAssociator
-    : IQueryHandler<IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData>, IAssociateSyntacticCSharpAttributeNamedQueryResponseCollector>
+    : IQueryHandler<IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData>, IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler>
 {
     /// <summary>Instantiates a <see cref="SyntacticCSharpAttributeNamedAssociator"/>, associating syntactic C# type arguments.</summary>
     public SyntacticCSharpAttributeNamedAssociator() { }
 
-    void IQueryHandler<IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData>, IAssociateSyntacticCSharpAttributeNamedQueryResponseCollector>.Handle(
+    void IQueryHandler<IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData>, IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler>.Handle(
         IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData> query,
-        IAssociateSyntacticCSharpAttributeNamedQueryResponseCollector queryResponseCollector)
+        IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler queryResponseHandler)
     {
         if (query is null)
         {
             throw new ArgumentNullException(nameof(query));
         }
 
-        if (queryResponseCollector is null)
+        if (queryResponseHandler is null)
         {
-            throw new ArgumentNullException(nameof(queryResponseCollector));
+            throw new ArgumentNullException(nameof(queryResponseHandler));
         }
 
         foreach (var syntacticArgument in query.Data.SyntacticArguments)
@@ -39,7 +40,9 @@ public sealed class SyntacticCSharpAttributeNamedAssociator
 
             var parameterName = nameEqualsSyntax.Name.Identifier.Text;
 
-            queryResponseCollector.Associations.Add(parameterName, syntacticArgument);
+            var command = new AddCSharpAttributeNamedAssociationCommand(parameterName, syntacticArgument);
+
+            queryResponseHandler.AssociationCollector.Handle(command);
         }
     }
 }
