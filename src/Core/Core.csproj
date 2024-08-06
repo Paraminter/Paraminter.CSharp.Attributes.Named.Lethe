@@ -4,7 +4,7 @@
         <AssemblyName>Paraminter.CSharp.Attributes.Named.Lethe</AssemblyName>
         
         <PackageId>Paraminter.CSharp.Attributes.Named.Lethe</PackageId>
-        <Description>Provides general implementations of services related to a Paraminter associator of syntactic C# named attribute arguments.</Description>
+        <Description>Provides a Paraminter associator of syntactic C# named attribute arguments.</Description>
     </PropertyGroup>
 
     <ItemGroup>
