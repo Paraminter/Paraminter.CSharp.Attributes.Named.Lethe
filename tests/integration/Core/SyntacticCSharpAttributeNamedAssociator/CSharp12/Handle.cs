@@ -5,10 +5,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Moq;
 
-using Paraminter.Associators.Queries;
-using Paraminter.CSharp.Attributes.Named.Commands;
-using Paraminter.CSharp.Attributes.Named.Lethe.Queries;
-using Paraminter.CSharp.Attributes.Named.Queries.Handlers;
+using Paraminter.Arguments.CSharp.Attributes.Named.Models;
+using Paraminter.Associators.Commands;
+using Paraminter.Commands.Handlers;
+using Paraminter.CSharp.Attributes.Named.Lethe.Models;
+using Paraminter.Parameters.Named.Models;
 
 using System;
 using System.Linq;
@@ -44,36 +45,48 @@ public sealed class Handle
         var syntacticArguments = attributeSyntax.ArgumentList!.Arguments;
         var parameters = syntacticArguments.Select(static (syntacticArgument) => syntacticArgument.NameEquals!.Name.Identifier.Text).ToArray();
 
-        Mock<IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData>> queryMock = new();
-        Mock<IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler> queryResponseHandlerMock = new() { DefaultValue = DefaultValue.Mock };
+        Mock<IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData>> commandMock = new();
 
-        queryMock.Setup((query) => query.Data.SyntacticArguments).Returns(syntacticArguments);
+        commandMock.Setup(static (command) => command.Data.SyntacticArguments).Returns(syntacticArguments);
 
-        Target(queryMock.Object, queryResponseHandlerMock.Object);
+        Target(commandMock.Object);
 
-        queryResponseHandlerMock.Verify(static (handler) => handler.AssociationCollector.Handle(It.IsAny<IAddCSharpAttributeNamedAssociationCommand>()), Times.Exactly(2));
-        queryResponseHandlerMock.Verify(AssociationExpression(parameters[0], syntacticArguments[0]), Times.Once());
-        queryResponseHandlerMock.Verify(AssociationExpression(parameters[1], syntacticArguments[1]), Times.Once());
+        Fixture.RecorderMock.Verify(static (recorder) => recorder.Handle(It.IsAny<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>()), Times.Exactly(2));
+        Fixture.RecorderMock.Verify(RecordExpression(parameters[0], syntacticArguments[0]), Times.Once());
+        Fixture.RecorderMock.Verify(RecordExpression(parameters[1], syntacticArguments[1]), Times.Once());
     }
 
-    private static Expression<Action<IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler>> AssociationExpression(
+    private static Expression<Action<ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>>> RecordExpression(
         string parameterName,
         AttributeArgumentSyntax syntacticArgument)
     {
-        return (handler) => handler.AssociationCollector.Handle(It.Is(MatchAssociationCommand(parameterName, syntacticArgument)));
+        return (recorder) => recorder.Handle(It.Is(MatchRecordCommand(parameterName, syntacticArgument)));
     }
 
-    private static Expression<Func<IAddCSharpAttributeNamedAssociationCommand, bool>> MatchAssociationCommand(
+    private static Expression<Func<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>, bool>> MatchRecordCommand(
         string parameterName,
         AttributeArgumentSyntax syntacticArgument)
     {
-        return (command) => ReferenceEquals(command.ParameterName, parameterName) && ReferenceEquals(command.SyntacticArgument, syntacticArgument);
+        return (command) => MatchParameter(parameterName, command.Parameter) && MatchArgumentData(syntacticArgument, command.ArgumentData);
+    }
+
+    private static bool MatchParameter(
+        string parameterName,
+        INamedParameter parameter)
+    {
+        return Equals(parameterName, parameter.Name);
+    }
+
+    private static bool MatchArgumentData(
+        AttributeArgumentSyntax syntacticArgument,
+        ICSharpAttributeNamedArgumentData argumentData)
+    {
+        return ReferenceEquals(syntacticArgument, argumentData.SyntacticArgument);
     }
 
     private void Target(
-        IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData> query,
-        IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler queryResponseHandler)
+        IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData> command)
     {
-        Fixture.Sut.Handle(query, queryResponseHandler);
+        Fixture.Sut.Handle(command);
     }
 }

@@ -1,11 +1,17 @@
 ﻿namespace Paraminter.CSharp.Attributes.Named.Lethe;
 
-using Paraminter.Associators.Queries;
-using Paraminter.CSharp.Attributes.Named.Lethe.Queries;
-using Paraminter.CSharp.Attributes.Named.Queries.Handlers;
-using Paraminter.Queries.Handlers;
+using Moq;
+
+using Paraminter.Arguments.CSharp.Attributes.Named.Models;
+
+using Paraminter.Associators.Commands;
+using Paraminter.Commands.Handlers;
+using Paraminter.CSharp.Attributes.Named.Lethe.Models;
+using Paraminter.Parameters.Named.Models;
 
 internal interface IFixture
 {
-    public abstract IQueryHandler<IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData>, IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler> Sut { get; }
+    public abstract ICommandHandler<IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData>> Sut { get; }
+
+    public abstract Mock<ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> RecorderMock { get; }
 }
