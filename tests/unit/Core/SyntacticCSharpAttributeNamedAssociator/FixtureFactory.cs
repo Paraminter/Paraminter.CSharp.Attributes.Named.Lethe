@@ -1,30 +1,43 @@
 ﻿namespace Paraminter.CSharp.Attributes.Named.Lethe;
 
-using Paraminter.Associators.Queries;
-using Paraminter.CSharp.Attributes.Named.Lethe.Queries;
-using Paraminter.CSharp.Attributes.Named.Queries.Handlers;
-using Paraminter.Queries.Handlers;
+using Moq;
+
+using Paraminter.Arguments.CSharp.Attributes.Named.Models;
+
+using Paraminter.Associators.Commands;
+using Paraminter.Commands.Handlers;
+using Paraminter.CSharp.Attributes.Named.Lethe.Models;
+using Paraminter.Parameters.Named.Models;
 
 internal static class FixtureFactory
 {
     public static IFixture Create()
     {
-        SyntacticCSharpAttributeNamedAssociator sut = new();
+        var recorderMock = new Mock<ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>>();
 
-        return new Fixture(sut);
+        SyntacticCSharpAttributeNamedAssociator sut = new(recorderMock.Object);
+
+        return new Fixture(sut, recorderMock);
     }
 
     private sealed class Fixture
         : IFixture
     {
-        private readonly IQueryHandler<IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData>, IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler> Sut;
+        private readonly ICommandHandler<IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData>> Sut;
+
+        private readonly Mock<ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> RecorderMock;
 
         public Fixture(
-            IQueryHandler<IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData>, IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler> sut)
+            ICommandHandler<IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData>> sut,
+            Mock<ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> recorderMock)
         {
             Sut = sut;
+
+            RecorderMock = recorderMock;
         }
 
-        IQueryHandler<IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData>, IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler> IFixture.Sut => Sut;
+        ICommandHandler<IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData>> IFixture.Sut => Sut;
+
+        Mock<ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> IFixture.RecorderMock => RecorderMock;
     }
 }

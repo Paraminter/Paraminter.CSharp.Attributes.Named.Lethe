@@ -2,47 +2,50 @@
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using Paraminter.Associators.Queries;
+using Paraminter.Arguments.CSharp.Attributes.Named.Models;
+using Paraminter.Associators.Commands;
+using Paraminter.Commands.Handlers;
 using Paraminter.CSharp.Attributes.Named.Lethe.Common;
-using Paraminter.CSharp.Attributes.Named.Lethe.Queries;
-using Paraminter.CSharp.Attributes.Named.Queries.Handlers;
-using Paraminter.Queries.Handlers;
+using Paraminter.CSharp.Attributes.Named.Lethe.Models;
+using Paraminter.Parameters.Named.Models;
 
 using System;
 
 /// <summary>Associates syntactic C# named attribute arguments.</summary>
 public sealed class SyntacticCSharpAttributeNamedAssociator
-    : IQueryHandler<IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData>, IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler>
+    : ICommandHandler<IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData>>
 {
-    /// <summary>Instantiates a <see cref="SyntacticCSharpAttributeNamedAssociator"/>, associating syntactic C# type arguments.</summary>
-    public SyntacticCSharpAttributeNamedAssociator() { }
+    private readonly ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> Recorder;
 
-    void IQueryHandler<IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData>, IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler>.Handle(
-        IAssociateArgumentsQuery<IAssociateSyntacticCSharpAttributeNamedData> query,
-        IAssociateSyntacticCSharpAttributeNamedQueryResponseHandler queryResponseHandler)
+    /// <summary>Instantiates a <see cref="SyntacticCSharpAttributeNamedAssociator"/>, associating syntactic C# named attribute arguments.</summary>
+    /// <param name="recorder">Records associated syntactic C# named attribute arguments.</param>
+    public SyntacticCSharpAttributeNamedAssociator(
+        ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> recorder)
     {
-        if (query is null)
+        Recorder = recorder ?? throw new ArgumentNullException(nameof(recorder));
+    }
+
+    void ICommandHandler<IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData>>.Handle(
+        IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData> command)
+    {
+        if (command is null)
         {
-            throw new ArgumentNullException(nameof(query));
+            throw new ArgumentNullException(nameof(command));
         }
 
-        if (queryResponseHandler is null)
-        {
-            throw new ArgumentNullException(nameof(queryResponseHandler));
-        }
-
-        foreach (var syntacticArgument in query.Data.SyntacticArguments)
+        foreach (var syntacticArgument in command.Data.SyntacticArguments)
         {
             if (syntacticArgument.NameEquals is not NameEqualsSyntax nameEqualsSyntax)
             {
                 continue;
             }
 
-            var parameterName = nameEqualsSyntax.Name.Identifier.Text;
+            var parameter = new NamedParameter(nameEqualsSyntax.Name.Identifier.Text);
+            var argumentData = new CSharpAttributeNamedArgumentData(syntacticArgument);
 
-            var command = new AddCSharpAttributeNamedAssociationCommand(parameterName, syntacticArgument);
+            var recordCommand = new RecordCSharpAttributeNamedAssociationCommand(parameter, argumentData);
 
-            queryResponseHandler.AssociationCollector.Handle(command);
+            Recorder.Handle(recordCommand);
         }
     }
 }

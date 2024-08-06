@@ -1,16 +1,37 @@
 ﻿namespace Paraminter.CSharp.Attributes.Named.Lethe;
 
+using Moq;
+
+using Paraminter.Arguments.CSharp.Attributes.Named.Models;
+using Paraminter.Associators.Commands;
+using Paraminter.Commands.Handlers;
+using Paraminter.Parameters.Named.Models;
+
+using System;
+
 using Xunit;
 
 public sealed class Constructor
 {
     [Fact]
-    public void ReturnsAssociator()
+    public void NullRecorder_ThrowsArgumentNullException()
     {
-        var result = Target();
+        var result = Record.Exception(() => Target(null!));
+
+        Assert.IsType<ArgumentNullException>(result);
+    }
+
+    [Fact]
+    public void ValidArguments_ReturnsAssociator()
+    {
+        var result = Target(Mock.Of<ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>>());
 
         Assert.NotNull(result);
     }
 
-    private static SyntacticCSharpAttributeNamedAssociator Target() => new();
+    private static SyntacticCSharpAttributeNamedAssociator Target(
+        ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> recorder)
+    {
+        return new SyntacticCSharpAttributeNamedAssociator(recorder);
+    }
 }
