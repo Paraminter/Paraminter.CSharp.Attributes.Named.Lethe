@@ -1,8 +1,8 @@
 ﻿namespace Paraminter.CSharp.Attributes.Named.Lethe.Common;
 
 using Paraminter.Arguments.CSharp.Attributes.Named.Models;
-using Paraminter.Associators.Commands;
 using Paraminter.Parameters.Named.Models;
+using Paraminter.Recorders.Commands;
 
 internal sealed class RecordCSharpAttributeNamedAssociationCommand
     : IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>

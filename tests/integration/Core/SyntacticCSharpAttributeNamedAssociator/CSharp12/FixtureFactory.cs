@@ -8,6 +8,7 @@ using Paraminter.Associators.Commands;
 using Paraminter.Commands.Handlers;
 using Paraminter.CSharp.Attributes.Named.Lethe.Models;
 using Paraminter.Parameters.Named.Models;
+using Paraminter.Recorders.Commands;
 
 internal static class FixtureFactory
 {
