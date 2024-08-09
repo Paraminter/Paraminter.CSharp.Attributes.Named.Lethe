@@ -3,7 +3,7 @@
 using Moq;
 
 using Paraminter.Arguments.CSharp.Attributes.Named.Models;
-using Paraminter.Commands.Handlers;
+using Paraminter.Cqs.Handlers;
 using Paraminter.Parameters.Named.Models;
 using Paraminter.Recorders.Commands;
 
