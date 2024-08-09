@@ -1,4 +1,4 @@
-﻿namespace Paraminter.CSharp.Attributes.Named.Lethe.Common;
+﻿namespace Paraminter.CSharp.Attributes.Named.Lethe.Commands;
 
 using Paraminter.Arguments.CSharp.Attributes.Named.Models;
 using Paraminter.Parameters.Named.Models;

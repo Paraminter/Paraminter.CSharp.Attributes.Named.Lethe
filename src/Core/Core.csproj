@@ -9,8 +9,8 @@
 
     <ItemGroup>
         <PackageReference Include="Paraminter.Arguments.CSharp.Attributes.Named.Models" />
-        <PackageReference Include="Paraminter.Associators.Commands" />
-        <PackageReference Include="Paraminter.Commands.Handlers" />
+        <PackageReference Include="Paraminter.Commands" />
+        <PackageReference Include="Paraminter.Cqs.Commands.Handlers" />
         <PackageReference Include="Paraminter.Parameters.Named.Models" />
         <PackageReference Include="Paraminter.Recorders.Commands" />
 
