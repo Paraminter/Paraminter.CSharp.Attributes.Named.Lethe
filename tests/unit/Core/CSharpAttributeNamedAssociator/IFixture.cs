@@ -7,11 +7,10 @@ using Paraminter.Commands;
 using Paraminter.Cqs.Handlers;
 using Paraminter.CSharp.Attributes.Named.Lethe.Models;
 using Paraminter.Parameters.Named.Models;
-using Paraminter.Recorders.Commands;
 
 internal interface IFixture
 {
-    public abstract ICommandHandler<IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData>> Sut { get; }
+    public abstract ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentData>> Sut { get; }
 
-    public abstract Mock<ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> RecorderMock { get; }
+    public abstract Mock<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> IndividualAssociatorMock { get; }
 }

@@ -3,9 +3,9 @@
 using Moq;
 
 using Paraminter.Arguments.CSharp.Attributes.Named.Models;
+using Paraminter.Commands;
 using Paraminter.Cqs.Handlers;
 using Paraminter.Parameters.Named.Models;
-using Paraminter.Recorders.Commands;
 
 using System;
 
@@ -14,7 +14,7 @@ using Xunit;
 public sealed class Constructor
 {
     [Fact]
-    public void NullRecorder_ThrowsArgumentNullException()
+    public void NullIndividualAssociator_ThrowsArgumentNullException()
     {
         var result = Record.Exception(() => Target(null!));
 
@@ -24,14 +24,14 @@ public sealed class Constructor
     [Fact]
     public void ValidArguments_ReturnsAssociator()
     {
-        var result = Target(Mock.Of<ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>>());
+        var result = Target(Mock.Of<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>>());
 
         Assert.NotNull(result);
     }
 
     private static SyntacticCSharpAttributeNamedAssociator Target(
-        ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> recorder)
+        ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> individualAssociator)
     {
-        return new SyntacticCSharpAttributeNamedAssociator(recorder);
+        return new SyntacticCSharpAttributeNamedAssociator(individualAssociator);
     }
 }
