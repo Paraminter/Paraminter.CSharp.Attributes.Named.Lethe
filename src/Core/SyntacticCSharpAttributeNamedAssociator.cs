@@ -13,7 +13,7 @@ using System;
 
 /// <summary>Associates C# named attribute arguments with parameters.</summary>
 public sealed class SyntacticCSharpAttributeNamedAssociator
-    : ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentData>>
+    : ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData>>
 {
     private readonly ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> IndividualAssociator;
 
@@ -25,8 +25,8 @@ public sealed class SyntacticCSharpAttributeNamedAssociator
         IndividualAssociator = individualAssociator ?? throw new ArgumentNullException(nameof(individualAssociator));
     }
 
-    void ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentData>>.Handle(
-        IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentData> command)
+    void ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData>>.Handle(
+        IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData> command)
     {
         if (command is null)
         {
