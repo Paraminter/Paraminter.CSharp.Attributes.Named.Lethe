@@ -8,26 +8,25 @@ using Paraminter.Cqs.Handlers;
 using Paraminter.CSharp.Attributes.Named.Lethe.Commands;
 using Paraminter.CSharp.Attributes.Named.Lethe.Models;
 using Paraminter.Parameters.Named.Models;
-using Paraminter.Recorders.Commands;
 
 using System;
 
-/// <summary>Associates syntactic C# named attribute arguments.</summary>
+/// <summary>Associates C# named attribute arguments with parameters.</summary>
 public sealed class SyntacticCSharpAttributeNamedAssociator
-    : ICommandHandler<IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData>>
+    : ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData>>
 {
-    private readonly ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> Recorder;
+    private readonly ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> IndividualAssociator;
 
-    /// <summary>Instantiates a <see cref="SyntacticCSharpAttributeNamedAssociator"/>, associating syntactic C# named attribute arguments.</summary>
-    /// <param name="recorder">Records associated syntactic C# named attribute arguments.</param>
+    /// <summary>Instantiates an associator of C# named attribute arguments with parameters.</summary>
+    /// <param name="individualAssociator">Associates individual C# named attribute arguments with parameters.</param>
     public SyntacticCSharpAttributeNamedAssociator(
-        ICommandHandler<IRecordArgumentAssociationCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> recorder)
+        ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> individualAssociator)
     {
-        Recorder = recorder ?? throw new ArgumentNullException(nameof(recorder));
+        IndividualAssociator = individualAssociator ?? throw new ArgumentNullException(nameof(individualAssociator));
     }
 
-    void ICommandHandler<IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData>>.Handle(
-        IAssociateArgumentsCommand<IAssociateSyntacticCSharpAttributeNamedData> command)
+    void ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData>>.Handle(
+        IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData> command)
     {
         if (command is null)
         {
@@ -41,12 +40,19 @@ public sealed class SyntacticCSharpAttributeNamedAssociator
                 continue;
             }
 
-            var parameter = new NamedParameter(nameEqualsSyntax.Name.Identifier.Text);
-            var argumentData = new CSharpAttributeNamedArgumentData(syntacticArgument);
-
-            var recordCommand = new RecordCSharpAttributeNamedAssociationCommand(parameter, argumentData);
-
-            Recorder.Handle(recordCommand);
+            AssociateArgument(nameEqualsSyntax.Name.Identifier.Text, syntacticArgument);
         }
+    }
+
+    private void AssociateArgument(
+        string parameterName,
+        AttributeArgumentSyntax syntacticArgument)
+    {
+        var parameter = new NamedParameter(parameterName);
+        var argumentData = new CSharpAttributeNamedArgumentData(syntacticArgument);
+
+        var command = new AssociateSingleArgumentCommand(parameter, argumentData);
+
+        IndividualAssociator.Handle(command);
     }
 }
