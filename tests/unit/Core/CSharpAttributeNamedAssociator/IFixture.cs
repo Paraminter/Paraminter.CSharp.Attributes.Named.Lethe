@@ -10,7 +10,7 @@ using Paraminter.Parameters.Named.Models;
 
 internal interface IFixture
 {
-    public abstract ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData>> Sut { get; }
+    public abstract ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>> Sut { get; }
 
     public abstract Mock<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> IndividualAssociatorMock { get; }
 }

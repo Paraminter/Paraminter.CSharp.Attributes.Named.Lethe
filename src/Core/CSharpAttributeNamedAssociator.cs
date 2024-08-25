@@ -11,22 +11,22 @@ using Paraminter.Parameters.Named.Models;
 
 using System;
 
-/// <summary>Associates C# named attribute arguments with parameters.</summary>
-public sealed class SyntacticCSharpAttributeNamedAssociator
-    : ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData>>
+/// <summary>Associates syntactic C# named attribute arguments with parameters.</summary>
+public sealed class CSharpAttributeNamedAssociator
+    : ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>>
 {
     private readonly ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> IndividualAssociator;
 
-    /// <summary>Instantiates an associator of C# named attribute arguments with parameters.</summary>
-    /// <param name="individualAssociator">Associates individual C# named attribute arguments with parameters.</param>
-    public SyntacticCSharpAttributeNamedAssociator(
+    /// <summary>Instantiates an associator of syntactic C# named attribute arguments with parameters.</summary>
+    /// <param name="individualAssociator">Associates individual syntactic C# named attribute arguments with parameters.</param>
+    public CSharpAttributeNamedAssociator(
         ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> individualAssociator)
     {
         IndividualAssociator = individualAssociator ?? throw new ArgumentNullException(nameof(individualAssociator));
     }
 
-    void ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData>>.Handle(
-        IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData> command)
+    void ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>>.Handle(
+        IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData> command)
     {
         if (command is null)
         {

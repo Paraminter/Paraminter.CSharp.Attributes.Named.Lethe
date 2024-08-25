@@ -45,7 +45,7 @@ public sealed class Handle
         var syntacticArguments = attributeSyntax.ArgumentList!.Arguments;
         var parameters = syntacticArguments.Select(static (syntacticArgument) => syntacticArgument.NameEquals!.Name.Identifier.Text).ToArray();
 
-        Mock<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData>> commandMock = new();
+        Mock<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>> commandMock = new();
 
         commandMock.Setup(static (command) => command.Data.SyntacticArguments).Returns(syntacticArguments);
 
@@ -85,7 +85,7 @@ public sealed class Handle
     }
 
     private void Target(
-        IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData> command)
+        IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData> command)
     {
         Fixture.Sut.Handle(command);
     }
