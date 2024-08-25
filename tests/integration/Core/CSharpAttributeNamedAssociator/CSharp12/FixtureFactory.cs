@@ -14,7 +14,7 @@ internal static class FixtureFactory
     {
         var individualAssociatorMock = new Mock<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>>();
 
-        SyntacticCSharpAttributeNamedAssociator sut = new(individualAssociatorMock.Object);
+        CSharpAttributeNamedAssociator sut = new(individualAssociatorMock.Object);
 
         return new Fixture(sut, individualAssociatorMock);
     }
@@ -22,12 +22,12 @@ internal static class FixtureFactory
     private sealed class Fixture
         : IFixture
     {
-        private readonly ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData>> Sut;
+        private readonly ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>> Sut;
 
         private readonly Mock<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> IndividualAssociatorMock;
 
         public Fixture(
-            ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData>> sut,
+            ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>> sut,
             Mock<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> individualAssociatorMock)
         {
             Sut = sut;
@@ -35,7 +35,7 @@ internal static class FixtureFactory
             IndividualAssociatorMock = individualAssociatorMock;
         }
 
-        ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllSyntacticCSharpAttributeNamedArgumentsData>> IFixture.Sut => Sut;
+        ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>> IFixture.Sut => Sut;
 
         Mock<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> IFixture.IndividualAssociatorMock => IndividualAssociatorMock;
     }

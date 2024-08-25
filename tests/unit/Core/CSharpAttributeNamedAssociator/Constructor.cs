@@ -29,9 +29,9 @@ public sealed class Constructor
         Assert.NotNull(result);
     }
 
-    private static SyntacticCSharpAttributeNamedAssociator Target(
+    private static CSharpAttributeNamedAssociator Target(
         ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> individualAssociator)
     {
-        return new SyntacticCSharpAttributeNamedAssociator(individualAssociator);
+        return new CSharpAttributeNamedAssociator(individualAssociator);
     }
 }
