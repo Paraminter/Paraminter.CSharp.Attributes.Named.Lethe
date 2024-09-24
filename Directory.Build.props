@@ -3,7 +3,7 @@
     <PropertyGroup>
         <LangVersion>12</LangVersion>
 
-        <RootNamespace>Paraminter.CSharp.Attributes.Named.Lethe</RootNamespace>
+        <RootNamespace>Paraminter.Associating.CSharp.Attributes.Named.Lethe</RootNamespace>
 
         <Nullable>enable</Nullable>
         <AnalysisMode>all</AnalysisMode>

@@ -1,4 +1,4 @@
-# Paraminter.CSharp.Attributes.Named.Lethe
+# Paraminter.Associating.CSharp.Attributes.Named.Lethe
 
 Provides a `Paraminter` associator of syntactic C# named attribute arguments.
 

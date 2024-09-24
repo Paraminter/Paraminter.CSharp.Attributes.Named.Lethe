@@ -1,32 +1,33 @@
-﻿namespace Paraminter.CSharp.Attributes.Named.Lethe;
+﻿namespace Paraminter.Associating.CSharp.Attributes.Named.Lethe;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Paraminter.Arguments.CSharp.Attributes.Named.Models;
-using Paraminter.Commands;
+using Paraminter.Associating.Commands;
+using Paraminter.Associating.CSharp.Attributes.Named.Lethe.Commands;
+using Paraminter.Associating.CSharp.Attributes.Named.Lethe.Models;
 using Paraminter.Cqs.Handlers;
-using Paraminter.CSharp.Attributes.Named.Lethe.Commands;
-using Paraminter.CSharp.Attributes.Named.Lethe.Models;
+using Paraminter.Pairing.Commands;
 using Paraminter.Parameters.Named.Models;
 
 using System;
 
 /// <summary>Associates syntactic C# named attribute arguments with parameters.</summary>
 public sealed class CSharpAttributeNamedAssociator
-    : ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>>
+    : ICommandHandler<IAssociateArgumentsCommand<IAssociateCSharpAttributeNamedArgumentsData>>
 {
-    private readonly ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> IndividualAssociator;
+    private readonly ICommandHandler<IPairArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> Pairer;
 
     /// <summary>Instantiates an associator of syntactic C# named attribute arguments with parameters.</summary>
-    /// <param name="individualAssociator">Associates individual syntactic C# named attribute arguments with parameters.</param>
+    /// <param name="pairer">Pairs syntactic C# named attribute arguments with parameters.</param>
     public CSharpAttributeNamedAssociator(
-        ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> individualAssociator)
+        ICommandHandler<IPairArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> pairer)
     {
-        IndividualAssociator = individualAssociator ?? throw new ArgumentNullException(nameof(individualAssociator));
+        Pairer = pairer ?? throw new ArgumentNullException(nameof(pairer));
     }
 
-    void ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>>.Handle(
-        IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData> command)
+    void ICommandHandler<IAssociateArgumentsCommand<IAssociateCSharpAttributeNamedArgumentsData>>.Handle(
+        IAssociateArgumentsCommand<IAssociateCSharpAttributeNamedArgumentsData> command)
     {
         if (command is null)
         {
@@ -40,19 +41,19 @@ public sealed class CSharpAttributeNamedAssociator
                 continue;
             }
 
-            AssociateArgument(nameEqualsSyntax.Name.Identifier.Text, syntacticArgument);
+            PairArgument(nameEqualsSyntax.Name.Identifier.Text, syntacticArgument);
         }
     }
 
-    private void AssociateArgument(
+    private void PairArgument(
         string parameterName,
         AttributeArgumentSyntax syntacticArgument)
     {
         var parameter = new NamedParameter(parameterName);
         var argumentData = new CSharpAttributeNamedArgumentData(syntacticArgument);
 
-        var command = new AssociateSingleArgumentCommand(parameter, argumentData);
+        var command = new PairArgumentCommand(parameter, argumentData);
 
-        IndividualAssociator.Handle(command);
+        Pairer.Handle(command);
     }
 }

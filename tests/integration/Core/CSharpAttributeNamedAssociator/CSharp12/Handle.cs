@@ -1,4 +1,4 @@
-﻿namespace Paraminter.CSharp.Attributes.Named.Lethe;
+﻿namespace Paraminter.Associating.CSharp.Attributes.Named.Lethe;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -6,9 +6,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Moq;
 
 using Paraminter.Arguments.CSharp.Attributes.Named.Models;
-using Paraminter.Commands;
+using Paraminter.Associating.Commands;
+using Paraminter.Associating.CSharp.Attributes.Named.Lethe.Models;
 using Paraminter.Cqs.Handlers;
-using Paraminter.CSharp.Attributes.Named.Lethe.Models;
+using Paraminter.Pairing.Commands;
 using Paraminter.Parameters.Named.Models;
 
 using System;
@@ -22,7 +23,7 @@ public sealed class Handle
     private readonly IFixture Fixture = FixtureFactory.Create();
 
     [Fact]
-    public void AttributeUsage_AssociatesAll()
+    public void AttributeUsage_PairsAll()
     {
         var source = """
             using System;
@@ -45,25 +46,25 @@ public sealed class Handle
         var syntacticArguments = attributeSyntax.ArgumentList!.Arguments;
         var parameters = syntacticArguments.Select(static (syntacticArgument) => syntacticArgument.NameEquals!.Name.Identifier.Text).ToArray();
 
-        Mock<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>> commandMock = new();
+        Mock<IAssociateArgumentsCommand<IAssociateCSharpAttributeNamedArgumentsData>> commandMock = new();
 
         commandMock.Setup(static (command) => command.Data.SyntacticArguments).Returns(syntacticArguments);
 
         Target(commandMock.Object);
 
-        Fixture.IndividualAssociatorMock.Verify(static (associator) => associator.Handle(It.IsAny<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>()), Times.Exactly(2));
-        Fixture.IndividualAssociatorMock.Verify(AssociateIndividualExpression(parameters[0], syntacticArguments[0]), Times.Once());
-        Fixture.IndividualAssociatorMock.Verify(AssociateIndividualExpression(parameters[1], syntacticArguments[1]), Times.Once());
+        Fixture.PairerMock.Verify(PairArgumentExpression(parameters[0], syntacticArguments[0]), Times.Once());
+        Fixture.PairerMock.Verify(PairArgumentExpression(parameters[1], syntacticArguments[1]), Times.Once());
+        Fixture.PairerMock.Verify(static (handler) => handler.Handle(It.IsAny<IPairArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>()), Times.Exactly(2));
     }
 
-    private static Expression<Action<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>>> AssociateIndividualExpression(
+    private static Expression<Action<ICommandHandler<IPairArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>>> PairArgumentExpression(
         string parameterName,
         AttributeArgumentSyntax syntacticArgument)
     {
-        return (associator) => associator.Handle(It.Is(MatchAssociateIndividualCommand(parameterName, syntacticArgument)));
+        return (handler) => handler.Handle(It.Is(MatchPairArgumentCommand(parameterName, syntacticArgument)));
     }
 
-    private static Expression<Func<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>, bool>> MatchAssociateIndividualCommand(
+    private static Expression<Func<IPairArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>, bool>> MatchPairArgumentCommand(
         string parameterName,
         AttributeArgumentSyntax syntacticArgument)
     {
@@ -85,7 +86,7 @@ public sealed class Handle
     }
 
     private void Target(
-        IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData> command)
+        IAssociateArgumentsCommand<IAssociateCSharpAttributeNamedArgumentsData> command)
     {
         Fixture.Sut.Handle(command);
     }

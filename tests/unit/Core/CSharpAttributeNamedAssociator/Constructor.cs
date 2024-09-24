@@ -1,10 +1,10 @@
-﻿namespace Paraminter.CSharp.Attributes.Named.Lethe;
+﻿namespace Paraminter.Associating.CSharp.Attributes.Named.Lethe;
 
 using Moq;
 
 using Paraminter.Arguments.CSharp.Attributes.Named.Models;
-using Paraminter.Commands;
 using Paraminter.Cqs.Handlers;
+using Paraminter.Pairing.Commands;
 using Paraminter.Parameters.Named.Models;
 
 using System;
@@ -14,7 +14,7 @@ using Xunit;
 public sealed class Constructor
 {
     [Fact]
-    public void NullIndividualAssociator_ThrowsArgumentNullException()
+    public void NullPairer_ThrowsArgumentNullException()
     {
         var result = Record.Exception(() => Target(null!));
 
@@ -24,14 +24,14 @@ public sealed class Constructor
     [Fact]
     public void ValidArguments_ReturnsAssociator()
     {
-        var result = Target(Mock.Of<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>>());
+        var result = Target(Mock.Of<ICommandHandler<IPairArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>>());
 
         Assert.NotNull(result);
     }
 
     private static CSharpAttributeNamedAssociator Target(
-        ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> individualAssociator)
+        ICommandHandler<IPairArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>> pairer)
     {
-        return new CSharpAttributeNamedAssociator(individualAssociator);
+        return new CSharpAttributeNamedAssociator(pairer);
     }
 }
