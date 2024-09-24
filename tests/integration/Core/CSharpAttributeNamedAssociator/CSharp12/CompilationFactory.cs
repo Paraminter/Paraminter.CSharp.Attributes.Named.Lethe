@@ -1,4 +1,4 @@
-﻿namespace Paraminter.CSharp.Attributes.Named.Lethe;
+﻿namespace Paraminter.Associating.CSharp.Attributes.Named.Lethe;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

@@ -1,42 +1,43 @@
-﻿namespace Paraminter.CSharp.Attributes.Named.Lethe;
+﻿namespace Paraminter.Associating.CSharp.Attributes.Named.Lethe;
 
 using Moq;
 
 using Paraminter.Arguments.CSharp.Attributes.Named.Models;
-using Paraminter.Commands;
+using Paraminter.Associating.Commands;
+using Paraminter.Associating.CSharp.Attributes.Named.Lethe.Models;
 using Paraminter.Cqs.Handlers;
-using Paraminter.CSharp.Attributes.Named.Lethe.Models;
+using Paraminter.Pairing.Commands;
 using Paraminter.Parameters.Named.Models;
 
 internal static class FixtureFactory
 {
     public static IFixture Create()
     {
-        var individualAssociatorMock = new Mock<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>>();
+        Mock<ICommandHandler<IPairArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> pairerMock = new();
 
-        CSharpAttributeNamedAssociator sut = new(individualAssociatorMock.Object);
+        CSharpAttributeNamedAssociator sut = new(pairerMock.Object);
 
-        return new Fixture(sut, individualAssociatorMock);
+        return new Fixture(sut, pairerMock);
     }
 
     private sealed class Fixture
         : IFixture
     {
-        private readonly ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>> Sut;
+        private readonly ICommandHandler<IAssociateArgumentsCommand<IAssociateCSharpAttributeNamedArgumentsData>> Sut;
 
-        private readonly Mock<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> IndividualAssociatorMock;
+        private readonly Mock<ICommandHandler<IPairArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> PairerMock;
 
         public Fixture(
-            ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>> sut,
-            Mock<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> individualAssociatorMock)
+            ICommandHandler<IAssociateArgumentsCommand<IAssociateCSharpAttributeNamedArgumentsData>> sut,
+            Mock<ICommandHandler<IPairArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> pairerMock)
         {
             Sut = sut;
 
-            IndividualAssociatorMock = individualAssociatorMock;
+            PairerMock = pairerMock;
         }
 
-        ICommandHandler<IAssociateAllArgumentsCommand<IAssociateAllCSharpAttributeNamedArgumentsData>> IFixture.Sut => Sut;
+        ICommandHandler<IAssociateArgumentsCommand<IAssociateCSharpAttributeNamedArgumentsData>> IFixture.Sut => Sut;
 
-        Mock<ICommandHandler<IAssociateSingleArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> IFixture.IndividualAssociatorMock => IndividualAssociatorMock;
+        Mock<ICommandHandler<IPairArgumentCommand<INamedParameter, ICSharpAttributeNamedArgumentData>>> IFixture.PairerMock => PairerMock;
     }
 }
