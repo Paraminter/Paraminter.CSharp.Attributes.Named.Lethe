@@ -11,6 +11,8 @@ using Paraminter.Pairing.Commands;
 using Paraminter.Parameters.Named.Models;
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 /// <summary>Associates syntactic C# named attribute arguments with parameters.</summary>
 public sealed class CSharpAttributeNamedAssociator
@@ -26,8 +28,9 @@ public sealed class CSharpAttributeNamedAssociator
         Pairer = pairer ?? throw new ArgumentNullException(nameof(pairer));
     }
 
-    void ICommandHandler<IAssociateArgumentsCommand<IAssociateCSharpAttributeNamedArgumentsData>>.Handle(
-        IAssociateArgumentsCommand<IAssociateCSharpAttributeNamedArgumentsData> command)
+    async Task ICommandHandler<IAssociateArgumentsCommand<IAssociateCSharpAttributeNamedArgumentsData>>.Handle(
+        IAssociateArgumentsCommand<IAssociateCSharpAttributeNamedArgumentsData> command,
+        CancellationToken cancellationToken)
     {
         if (command is null)
         {
@@ -41,19 +44,20 @@ public sealed class CSharpAttributeNamedAssociator
                 continue;
             }
 
-            PairArgument(nameEqualsSyntax.Name.Identifier.Text, syntacticArgument);
+            await PairArgument(nameEqualsSyntax.Name.Identifier.Text, syntacticArgument, cancellationToken).ConfigureAwait(false);
         }
     }
 
-    private void PairArgument(
+    private async Task PairArgument(
         string parameterName,
-        AttributeArgumentSyntax syntacticArgument)
+        AttributeArgumentSyntax syntacticArgument,
+        CancellationToken cancellationToken)
     {
         var parameter = new NamedParameter(parameterName);
         var argumentData = new CSharpAttributeNamedArgumentData(syntacticArgument);
 
         var command = new PairArgumentCommand(parameter, argumentData);
 
-        Pairer.Handle(command);
+        await Pairer.Handle(command, cancellationToken).ConfigureAwait(false);
     }
 }
