@@ -6,7 +6,6 @@ using Paraminter.Arguments.CSharp.Attributes.Named.Models;
 using Paraminter.Associating.Commands;
 using Paraminter.Associating.CSharp.Attributes.Named.Lethe.Commands;
 using Paraminter.Associating.CSharp.Attributes.Named.Lethe.Models;
-using Paraminter.Cqs;
 using Paraminter.Pairing.Commands;
 using Paraminter.Parameters.Named.Models;
 
